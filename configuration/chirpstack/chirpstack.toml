@@ -2,7 +2,7 @@
 name="ChirpStack Coolify AU915"
 
 [postgresql]
-dsn="postgres://chirpstack:chirpstack@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
+dsn="postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@${POSTGRESQL_HOST}/${POSTGRESQL_DB}?sslmode=disable"
 
 [redis]
 url="redis://redis:6379"
@@ -20,7 +20,6 @@ json=true
 
 [api]
 bind="0.0.0.0:8080"
-public_host="http://localhost:8085"
 
 # Activar Web UI si la usas
 #[web]
