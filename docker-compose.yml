@@ -100,7 +100,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
-    command: mosquitto -c /mosquitto/config/mosquitto.conf
+    #command: mosquitto -c /mosquitto/config/mosquitto.conf
     volumes:
       - ./configuration/mosquitto:/mosquitto/config
       #- mosquitto_data:/mosquitto/data
