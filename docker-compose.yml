@@ -3,16 +3,14 @@ version: "3.9"
 services:
   chirpstack:
     image: chirpstack/chirpstack:4
+    command: --config /etc/chirpstack
     ports:
-      - "8085:8081"
+      - "8085:8080"  # Cambiado para evitar conflicto
     volumes:
       - ./chirpstack/chirpstack.toml:/etc/chirpstack/chirpstack.toml
     depends_on:
       - redis
       - postgres
-    environment:
-      - SERVICE_USER_MOSQUITTO=${MQTT_USERNAME}
-      - SERVICE_PASSWORD_MOSQUITTO=${MQTT_PASSWORD}
     networks:
       - coolify
 
@@ -38,6 +36,3 @@ volumes:
 networks:
   coolify:
     external: true
-
-
-

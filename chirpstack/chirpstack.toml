@@ -1,59 +1,37 @@
-[logging]
-level="info"
+[meta]
+name="ChirpStack Coolify AU915"
 
 [postgresql]
-dsn="postgres://chirpstack:chirpstack@postgres/chirpstack?sslmode=disable"
+dsn="postgres://{{env "POSTGRES_USER"}}:{{env "POSTGRES_PASSWORD"}}@postgres/{{env "POSTGRES_DB"}}?sslmode=disable"
 
 [redis]
 url="redis://redis:6379"
 
-[mqtt]
-server="tcp://mqtt.grafo.cloud:1883"
-username="${SERVICE_USER_MOSQUITTO}"
-password="${SERVICE_PASSWORD_MOSQUITTO}"
+[network]
+net_id="000000"
+enabled_regions=["au915"]
+
+[integration.mqtt]
+server="tcp://mosquitto:1883"
+username="{{env "MQTT_USERNAME"}}"
+password="{{env "MQTT_PASSWORD"}}"
+json=true
 
 [api]
-bind="0.0.0.0:8081"  # Cambiado de 8080 a 8081 para evitar conflicto
+bind="0.0.0.0:8080"
+public_host="http://localhost:8085"
 
-[network.network_server]
-deduplication_delay="200ms"
-device_session_ttl="24h"
+# Activar Web UI si la usas
+[web]
+public_host="https://chirpstack.grafo.cloud"
 
-[[network.network_server.band]]
-name="EU868"
-uplink_frequencies=[868100000, 868300000, 868500000]
+# AU915 configura 8 canales de uplink y un downlink
+[region.au915]
+# Define los canales habilitados: sub-banda 1 (CH0-CH7 + 64)
+enabled_uplink_channels=[
+  0, 1, 2, 3, 4, 5, 6, 7, 64
+]
 
-[[network.network_server.band.network_settings.extra_channels]]
-frequency=867100000
-min_dr=0
-max_dr=5
-
-[[network.network_server.band.network_settings.extra_channels]]
-frequency=867300000
-min_dr=0
-max_dr=5
-
-[[network.network_server.band.network_settings.extra_channels]]
-frequency=867500000
-min_dr=0
-max_dr=5
-
-[[network.network_server.band.network_settings.extra_channels]]
-frequency=867700000
-min_dr=0
-max_dr=5
-
-[[network.network_server.band.network_settings.extra_channels]]
-frequency=867900000
-min_dr=0
-max_dr=5
-
-[network.gateway.backend]
-type="mqtt"
-
-[network.gateway.backend.mqtt]
-server="tcp://mqtt.grafo.cloud:1883"
-username="${SERVICE_USER_MOSQUITTO}"
-password="${SERVICE_PASSWORD_MOSQUITTO}"
-event_topic_template="gateway/{{ .GatewayID }}/event/{{ .EventType }}"
-command_topic_template="gateway/{{ .GatewayID }}/command/{{ .CommandType }}"
+# Downlink: DR8 a DR13
+rx1_delay=1
+rx2_dr=8
