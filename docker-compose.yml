@@ -3,7 +3,7 @@ version: "3.9"
 services:
   chirpstack:
     image: chirpstack/chirpstack:4
-    command: --config /etc/chirpstack
+    #command: --config /etc/chirpstack
     ports:
       - "8085:8080"  # Cambiado para evitar conflicto
     volumes:
