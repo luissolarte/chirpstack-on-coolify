@@ -35,3 +35,10 @@ enabled_uplink_channels=[
 # Downlink: DR8 a DR13
 rx1_delay=1
 rx2_dr=8
+
+[integration]
+  enabled=["mqtt"]
+
+  [integration.mqtt]
+    server="tcp://$MQTT_BROKER_HOST:1883/"
+    json=true
