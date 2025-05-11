@@ -2,10 +2,11 @@
 name="ChirpStack Coolify AU915"
 
 [postgresql]
-dsn="postgres://{{env "POSTGRES_USER"}}:{{env "POSTGRES_PASSWORD"}}@postgres/{{env "POSTGRES_DB"}}?sslmode=disable"
+dsn="postgres://chirpstack:chirpstack@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
 
 [redis]
 url="redis://redis:6379"
+tls_enabled=false
 
 [network]
 net_id="000000"
@@ -22,8 +23,8 @@ bind="0.0.0.0:8080"
 public_host="http://localhost:8085"
 
 # Activar Web UI si la usas
-[web]
-public_host="https://chirpstack.grafo.cloud"
+#[web]
+#public_host="https://chirpstack.grafo.cloud"
 
 # AU915 configura 8 canales de uplink y un downlink
 [region.au915]
