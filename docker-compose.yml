@@ -14,6 +14,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mosquitto:
     networks:
       - coolify
 
@@ -59,9 +60,18 @@ services:
     networks:
       - coolify
 
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "1884:1884"
+    volumes: 
+      - ./configuration/mosquitto/config/:/mosquitto/config/
+
 volumes:
   redisdata:
   postgresqldata:
+  mosquitto_config:
 
 
 networks:
