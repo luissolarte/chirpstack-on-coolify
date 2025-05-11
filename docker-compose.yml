@@ -98,7 +98,7 @@ services:
 
   # MQTT broker
   mosquitto:
-    image: eclipse-mosquitto:2
+    image: eclipse-mosquitto
     restart: unless-stopped
     #command: mosquitto -c /mosquitto/config/mosquitto.conf
     volumes:
