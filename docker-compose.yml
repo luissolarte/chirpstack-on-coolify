@@ -10,12 +10,10 @@ services:
     volumes:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
-      mosquitto:
-      postgres:
-          condition: service_healthy
-      redis:
-          condition: service_healthy
-
+      - postgres
+      - redis
+      - mosquitto
+          
     networks:
       - coolify
 
