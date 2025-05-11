@@ -6,7 +6,7 @@ services:
     command: -c /etc/chirpstack
     restart: unless-stopped
     ports:
-      - "8080:8080"  # Cambiado para evitar conflicto
+      - "8081:8080"  # Cambiado para evitar conflicto
     volumes:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
@@ -20,7 +20,7 @@ services:
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
     restart: unless-stopped
-    command: --server chirpstack:8080 --bind 0.0.0.0:8090 --insecure
+    command: --server chirpstack:8081 --bind 0.0.0.0:8090 --insecure
     ports:
       - "8090:8090"
     depends_on:
