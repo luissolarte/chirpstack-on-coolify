@@ -1,0 +1,51 @@
+# Configuración para la región AU915
+[region.au915_0]
+# Prefijo del tópico MQTT para esta región
+topic_prefix="au915"
+
+# Definición de la región
+name="AU915"
+common_name="Australia 915-928MHz"
+
+# Configuración de enlaces
+[region.au915_0.uplink]
+enabled_channels=[
+  0, 1, 2, 3, 4, 5, 6, 7,  # Primera sub-banda (915.2 - 916.8 MHz)
+]
+
+[region.au915_0.downlink]
+enabled_channels=[
+  0, 1, 2, 3, 4, 5, 6, 7,  # Primera sub-banda (923.3 - 927.5 MHz)
+]
+
+# Para clases A, B, y C (Todos los dispositivos)
+[region.au915_0.gateway.backend]
+# Multi SF (canales EU868)
+[region.au915_0.gateway.backend.multi_sf]
+frequencies=[
+  915200000, 915400000, 915600000, 915800000, 916000000, 916200000, 916400000, 916600000,
+]
+
+# Configuración LoRaWAN para AU915
+[region.au915_0.network]
+installation_margin=10                # Margen de seguridad para ADR en dB
+rx1_delay=1                           # RX1 delay in seconds
+rx1_dr_offset=0                       # RX1 DR offset
+rx2_dr=8                              # RX2 data-rate
+rx2_frequency=923300000               # RX2 frequency (Hz)
+max_eirp=30                           # Maximum EIRP in dBm
+
+# Configuración de clases para dispositivos
+[region.au915_0.network.class_b]
+ping_slot_dr=8                        # Class-B ping-slot data-rate
+ping_slot_frequency=923300000         # Class-B ping-slot frequency (Hz)
+
+# Configuración para MAC commands
+[region.au915_0.mac_commands]
+[region.au915_0.mac_commands.tx_param_setup]
+enabled=true
+
+# Tiempo en aire
+[region.au915_0.time_off_air]
+[region.au915_0.time_off_air.uplink]
+enabled=false
