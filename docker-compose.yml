@@ -9,9 +9,12 @@ services:
     volumes:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
-      - postgres
-      - mosquitto
-      - redis
+      postgres:
+        condition: service_healthy  # Espera a que PostgreSQL esté realmente listo
+      mosquitto:
+        condition: service_started
+      redis:
+        condition: service_started
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
@@ -26,7 +29,7 @@ services:
     volumes:
       - ./configuration/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
     environment:
-      # Modificado para AU915 en lugar de EU868
+      # Configurado para AU915
       - INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/event/{{ .EventType }}
       - INTEGRATION__MQTT__STATE_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/state/{{ .StateType }}
       - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/command/#
@@ -43,7 +46,7 @@ services:
     volumes:
       - ./configuration/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
     environment:
-      # Modificado para AU915 en lugar de EU868
+      # Configurado para AU915
       - INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/event/{{ .EventType }}
       - INTEGRATION__MQTT__STATE_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/state/{{ .StateType }}
       - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=au915/gateway/{{ .GatewayID }}/command/#
@@ -73,6 +76,11 @@ services:
       - POSTGRES_PASSWORD=root
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # Redis database
   redis:
@@ -82,16 +90,26 @@ services:
       - redis_data:/data
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # MQTT broker
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
+    command: mosquitto -c /mosquitto/config/mosquitto.conf
     volumes:
       - ./configuration/mosquitto:/mosquitto/config
+      #- mosquitto_data:/mosquitto/data
+      #- mosquitto_log:/mosquitto/log
     ports:
-      - "1884:1883"
+      - "1883:1883"
 
 volumes:
   postgres_data:
   redis_data:
+  #mosquitto_data:
+  #mosquitto_log:
