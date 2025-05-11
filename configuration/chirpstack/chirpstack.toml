@@ -10,7 +10,7 @@ tls_enabled=false
 
 [network]
 net_id="000000"
-enabled_regions=["au915"]
+enabled_regions=["au915_0"]
 
 [integration.mqtt]
 server="tcp://mosquitto:1883"
