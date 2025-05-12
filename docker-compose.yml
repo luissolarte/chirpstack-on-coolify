@@ -79,33 +79,10 @@ services:
     #ports:
       #- "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chirpstack"]
+      test: ["CMD-SHELL", "pg_isready -U chirpstack -W"]
       interval: 5s
       timeout: 50s
-      retries: 5
-    entrypoint: 
-      - /bin/sh
-      - -c
-      - |
-        echo 'Iniciando PostgreSQL...'
-        # Iniciar PostgreSQL
-        docker-entrypoint.sh postgres &
-        PG_PID=$$
-        # Esperar a que PostgreSQL esté listo
-        until pg_isready -U postgres > /dev/null 2>&1; do
-          echo 'Esperando a PostgreSQL...'
-          sleep 2
-        done
-        echo 'PostgreSQL iniciado, configurando chirpstack...'
-        # Crear rol chirpstack
-        psql -U postgres -c "CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';" 2>/dev/null || echo 'Rol ya existe'
-        # Crear base de datos chirpstack
-        psql -U postgres -c "CREATE DATABASE chirpstack WITH OWNER chirpstack;" 2>/dev/null || echo 'DB ya existe'
-        # Crear extensiones
-        psql -U postgres -d chirpstack -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-        psql -U postgres -d chirpstack -c "CREATE EXTENSION IF NOT EXISTS hstore;"
-        echo 'Configuración completa'
-        wait $PG_PID
+      retries: 5   
       
   # Redis database
   redis:
