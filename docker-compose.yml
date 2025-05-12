@@ -81,7 +81,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U chirpstack && psql -U chirpstack -lqt | cut -d \\| -f 1 | grep -qw chirpstack"]
       interval: 5s
-      timeout: 5s
+      timeout: 50s
       retries: 5
     entrypoint: ["sh", "-c", "
       echo 'Iniciando PostgreSQL...' &&
