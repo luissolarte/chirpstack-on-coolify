@@ -6,6 +6,8 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     #command: -c /docker-entrypoint-initdb.d
+    networks:
+      - chirpstack-net
     volumes:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
@@ -22,12 +24,14 @@ services:
       interval: 5s
       timeout: 50s
       retries: 5   
-      start_period: 60s
+      start_period: 100s
   # ChirpStack Application Server
   chirpstack:
     image: chirpstack/chirpstack:4
     command: -c /etc/chirpstack
     restart: unless-stopped
+    networks:
+      - chirpstack-net
     volumes:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
@@ -80,6 +84,8 @@ services:
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
     restart: unless-stopped
+    networks:
+      - chirpstack-net
     environment:
       - SERVER=chirpstack:8080
     ports:
@@ -91,6 +97,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    networks:
+      - chirpstack-net
     volumes:
       - redis_data:/data
     # ports:
@@ -107,6 +115,8 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
+    networks:
+      - chirpstack-net
     volumes:
       - mosquitto-config:/mosquitto/config
     environment:
@@ -130,3 +140,7 @@ volumes:
   postgres_data:
   redis_data:
   mosquitto-config:
+
+networks:
+  chirpstack-net:
+    driver: bridge
