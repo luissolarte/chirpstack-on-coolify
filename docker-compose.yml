@@ -83,30 +83,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    entrypoint: >
-      sh -c "
-      # Inicializar PostgreSQL con el entrypoint original
+    entrypoint: ["sh", "-c", "
+      echo 'Iniciando setup de PostgreSQL con ChirpStack...' &&
       /docker-entrypoint.sh postgres &
-      # Esperar a que PostgreSQL esté listo
-      until pg_isready -U postgres; do
+      POSTGRES_PID=$$! &&
+      echo 'Esperando a que PostgreSQL esté listo...' &&
+      until pg_isready -U postgres > /dev/null 2>&1; do
         echo 'Esperando a PostgreSQL...'
         sleep 2
-      done
-      # Crear usuario y base de datos para ChirpStack
-      psql -U postgres <<-EOSQL
-        CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';
-        CREATE DATABASE chirpstack WITH OWNER chirpstack;
-      EOSQL
-      # Crear extensiones en la base de datos chirpstack
-      psql -U postgres -d chirpstack <<-EOSQL
-        CREATE EXTENSION IF NOT EXISTS pg_trgm;
-        CREATE EXTENSION IF NOT EXISTS hstore;
-      EOSQL
-      echo 'ChirpStack database setup complete'
-      # Mantener el proceso principal corriendo
-      wait
-      "
-
+      done &&
+      echo 'PostgreSQL está listo. Creando usuario y base de datos...' &&
+      psql -U postgres -c \"CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';\" || echo 'Usuario chirpstack ya existe' &&
+      psql -U postgres -c \"CREATE DATABASE chirpstack WITH OWNER chirpstack;\" || echo 'Base de datos chirpstack ya existe' &&
+      psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS pg_trgm;\" &&
+      psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS hstore;\" &&
+      echo 'Setup de ChirpStack completado' &&
+      wait $POSTGRES_PID
+     "]
   # Redis database
   redis:
     image: redis:7-alpine
