@@ -10,7 +10,7 @@ services:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
       mosquitto:
         condition: service_started
       redis:
@@ -73,7 +73,7 @@ services:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_PASSWORD=chirpstack
       # - POSTGRES_USER=chirpstack
       # - POSTGRES_DB=chirpstack
     #ports:
