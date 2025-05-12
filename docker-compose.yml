@@ -74,8 +74,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=chirpstack
-      # - POSTGRES_USER=chirpstack
-      # - POSTGRES_DB=chirpstack
+      - POSTGRES_USER=chirpstack
+      - POSTGRES_DB=chirpstack
     #ports:
       #- "5432:5432"
     healthcheck:
@@ -83,6 +83,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    entrypoint: >
+      sh -c "
+      # Inicializar PostgreSQL con el entrypoint original
+      /docker-entrypoint.sh postgres &
+      # Esperar a que PostgreSQL esté listo
+      until pg_isready -U postgres; do
+        echo 'Esperando a PostgreSQL...'
+        sleep 2
+      done
+      # Crear usuario y base de datos para ChirpStack
+      psql -U postgres <<-EOSQL
+        CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';
+        CREATE DATABASE chirpstack WITH OWNER chirpstack;
+      EOSQL
+      # Crear extensiones en la base de datos chirpstack
+      psql -U postgres -d chirpstack <<-EOSQL
+        CREATE EXTENSION IF NOT EXISTS pg_trgm;
+        CREATE EXTENSION IF NOT EXISTS hstore;
+      EOSQL
+      echo 'ChirpStack database setup complete'
+      # Mantener el proceso principal corriendo
+      wait
+      "
 
   # Redis database
   redis:
