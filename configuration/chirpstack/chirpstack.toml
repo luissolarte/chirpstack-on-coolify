@@ -4,7 +4,28 @@ level="info"
 
 # PostgreSQL settings.
 [postgresql]
-dsn="postgres://chirpstack:chirpstack@postgres/chirpstack?sslmode=disable"
+  # PostgreSQL DSN.
+  #
+  # Format example: postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>/<DATABASE>?sslmode=<SSLMODE>.
+  #
+  # SSL mode options:
+  #  * disable - Do not use TLS
+  #  * prefer - Attempt to connect with TLS but allow sessions without
+  #  * require - Require the use of TLS
+  dsn="postgres://chirpstack:chirpstack@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
+
+  # Max open connections.
+  #
+  # This sets the max. number of open connections that are allowed in the
+  # PostgreSQL connection pool.
+  max_open_connections=10
+
+  # Min idle connections.
+  #
+  # This sets the min. number of idle connections in the PostgreSQL connection
+  # pool (0 = equal to max_open_connections).
+  min_idle_connections=0
+
 
 # Redis settings
 [redis]
