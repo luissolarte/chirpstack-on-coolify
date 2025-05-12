@@ -10,7 +10,7 @@ services:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
       mosquitto:
         condition: service_started
       redis:
