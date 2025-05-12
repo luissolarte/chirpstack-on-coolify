@@ -83,6 +83,7 @@ services:
       interval: 5s
       timeout: 50s
       retries: 5
+      start_period: 30s
     entrypoint: ["sh", "-c", "
       echo 'Iniciando PostgreSQL...' &&
       /docker-entrypoint.sh postgres &
