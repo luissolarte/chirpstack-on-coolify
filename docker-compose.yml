@@ -83,6 +83,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    entrypoint: ["sh", "-c", "
+      echo 'Iniciando PostgreSQL...' &&
+      /docker-entrypoint.sh postgres &
+      POSTGRES_PID=$$! &&
+      echo 'Esperando a PostgreSQL...' &&
+      until pg_isready -U postgres > /dev/null 2>&1; do
+        sleep 2
+      done &&
+      echo 'Configurando chirpstack...' &&
+      PGPASSWORD=root psql -U postgres -c \"CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';\" 2>/dev/null || echo 'Usuario ya existe' &&
+      PGPASSWORD=root psql -U postgres -c \"CREATE DATABASE chirpstack WITH OWNER chirpstack;\" 2>/dev/null || echo 'DB ya existe' &&
+      PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS pg_trgm;\" &&
+      PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS hstore;\" &&
+      echo 'Setup completado' &&
+      wait $POSTGRES_PID
+     "]
       
   # Redis database
   redis:
