@@ -10,13 +10,15 @@ services:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_USER=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_PASSWORD={{ .Env.POSTGRES_PASSWORD="chirpstack" }}
+      - POSTGRES_USER={{ .Env.POSTGRES_USER="chirpstack" }}
+      - POSTGRES_DB={{ .Env.POSTGRES_DB="chirpstack" }}
+      - POSTGRESQL_HOST={{ .Env.POSTGRESQL_HOST="localhost" }}
+      #- POSTGRES_HOST_AUTH_METHOD=trust
     #ports:
       #- "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chirpstack -W chirpstack"]
+      test: ["CMD-SHELL", "pg_isready -U chirpstack"]
       interval: 5s
       timeout: 50s
       retries: 5   
