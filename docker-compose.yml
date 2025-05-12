@@ -10,7 +10,7 @@ services:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
       postgres:
-        condition: service_healthy  # Espera a que PostgreSQL esté realmente listo
+        condition: service_healthy
       mosquitto:
         condition: service_started
       redis:
@@ -73,7 +73,9 @@ services:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_PASSWORD=chirpstack
+      - POSTGRES_USER=chirpstack
+      - POSTGRES_DB=chirpstack
     ports:
       - "5432:5432"
     healthcheck:
@@ -96,20 +98,32 @@ services:
       timeout: 5s
       retries: 5
 
-  # MQTT broker
+  # MQTT broker - Usando entrypoint para generar configuración
   mosquitto:
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:2
     restart: unless-stopped
-    #command: mosquitto -c /mosquitto/config/mosquitto.conf
-    volumes:
-      - ./configuration/mosquitto:/mosquitto/config
-      #- mosquitto_data:/mosquitto/data
-      #- mosquitto_log:/mosquitto/log
     ports:
       - "1883:1883"
+    volumes:
+      - mosquitto-config:/mosquitto/config
+    environment:
+      - ALLOW_ANONYMOUS=true
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    entrypoint: >
+      sh -c "
+      echo 'listener 1883' > /mosquitto/config/mosquitto.conf &&
+      echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf &&
+      echo 'connection_messages true' >> /mosquitto/config/mosquitto.conf &&
+      echo 'log_dest stdout' >> /mosquitto/config/mosquitto.conf &&
+      chmod 0644 /mosquitto/config/mosquitto.conf &&
+      exec mosquitto -c /mosquitto/config/mosquitto.conf
+      "
 
 volumes:
   postgres_data:
   redis_data:
-  #mosquitto_data:
-  #mosquitto_log:
+  mosquitto-config:
