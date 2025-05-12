@@ -98,7 +98,7 @@ services:
       PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS pg_trgm;\" &&
       PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS hstore;\" &&
       echo 'Setup completado' &&
-      wait $POSTGRES_PID
+      wait $$POSTGRES_PID
      "]
       
   # Redis database
