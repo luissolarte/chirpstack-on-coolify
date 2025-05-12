@@ -84,22 +84,32 @@ services:
       timeout: 50s
       retries: 5
       start_period: 30s
-    entrypoint: ["sh", "-c", "
-      echo 'Iniciando PostgreSQL...' &&
-      /docker-entrypoint.sh postgres &
-      POSTGRES_PID=$$! &&
-      echo 'Esperando a PostgreSQL...' &&
+    entrypoint: ["sh", "-c"]
+    command: |
+      "
+      echo 'Iniciando PostgreSQL con configuración chirpstack...'
+      # Iniciar PostgreSQL con el entrypoint original
+      /usr/local/bin/docker-entrypoint.sh postgres &
+      PG_PID=$$
+      # Esperar a que PostgreSQL esté listo
       until pg_isready -U postgres > /dev/null 2>&1; do
+        echo 'Esperando a PostgreSQL...'
         sleep 2
-      done &&
-      echo 'Configurando chirpstack...' &&
-      PGPASSWORD=root psql -U postgres -c \"CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';\" 2>/dev/null || echo 'Usuario ya existe' &&
-      PGPASSWORD=root psql -U postgres -c \"CREATE DATABASE chirpstack WITH OWNER chirpstack;\" 2>/dev/null || echo 'DB ya existe' &&
-      PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS pg_trgm;\" &&
-      PGPASSWORD=root psql -U postgres -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS hstore;\" &&
-      echo 'Setup completado' &&
-      wait $$POSTGRES_PID
-     "]
+      done
+      echo 'PostgreSQL iniciado, configurando chirpstack...'
+      # Usar PGPASSWORD para evitar problemas con -W
+      export PGPASSWORD=root
+      # Crear rol chirpstack
+      psql -U postgres -h localhost -c \"CREATE ROLE chirpstack WITH LOGIN PASSWORD 'chirpstack';\" 2>/dev/null || echo 'Rol chirpstack ya existe'
+      # Crear base de datos chirpstack
+      psql -U postgres -h localhost -c \"CREATE DATABASE chirpstack WITH OWNER chirpstack;\" 2>/dev/null || echo 'DB chirpstack ya existe'
+      # Conectar a la base de datos chirpstack y crear extensiones
+      psql -U postgres -h localhost -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS pg_trgm;\"
+      psql -U postgres -h localhost -d chirpstack -c \"CREATE EXTENSION IF NOT EXISTS hstore;\"
+      echo 'Configuración completa'
+      # Mantener PostgreSQL ejecutándose
+      wait $$PG_PID
+      "
       
   # Redis database
   redis:
