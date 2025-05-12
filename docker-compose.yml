@@ -37,7 +37,7 @@ services:
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_HOST=chirpstack
     ports:
       - "8081:8080"
 
