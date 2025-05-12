@@ -73,9 +73,9 @@ services:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_USER=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_PASSWORD=root
+      # - POSTGRES_USER=chirpstack
+      # - POSTGRES_DB=chirpstack
     #ports:
       #- "5432:5432"
     healthcheck:
