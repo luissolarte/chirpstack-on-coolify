@@ -1,25 +1,7 @@
-# Configuración para Gateway Bridge
-[general]
-# Nivel de registro
-log_level="info"
+# See https://www.chirpstack.io/gateway-bridge/install/config/ for a full
+# configuration example and documentation.
 
-# Configuración para backend UDP - para gateways con UDP Packet Forwarder
-[backend.semtech_udp]
-udp_bind="0.0.0.0:1700"
-
-# Configuración para backend MQTT - para gateways con MQTT forwarder
-[backend.mqtt]
-server="tcp://mosquitto:1883"
-topic_prefix="au915"
-
-# Configuración de la integración MQTT
-[integration.mqtt]
-server="tcp://mosquitto:1883"
-topic_prefix="au915"
-event_topic_template="gateway/{{ .GatewayID }}/event/{{ .EventType }}"
-state_topic_template="gateway/{{ .GatewayID }}/state/{{ .StateType }}"
-command_topic_template="gateway/{{ .GatewayID }}/command/#"
-
-# Configuración del marshaler
-[integration.mqtt.marshaler]
-type="protobuf"
+[integration.mqtt.auth.generic]
+servers=["tcp://mosquitto:1883"]
+username=""
+password=""
