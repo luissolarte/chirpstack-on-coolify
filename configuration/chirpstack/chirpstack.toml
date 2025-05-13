@@ -38,11 +38,11 @@ servers=[
 bind="0.0.0.0:8080"
 
 # Integración con el broker MQTT
-[integration.mqtt]
-server="tcp://mosquitto:1883"
-event_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/event/{{ .EventType }}"
-state_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/state/{{ .StateType }}"
-command_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/command/{{ .CommandType }}"
+#[integration.mqtt]
+#server="tcp://mosquitto:1883"
+#event_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/event/{{ .EventType }}"
+#state_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/state/{{ .StateType }}"
+#command_topic_template="au915/application/{{ .ApplicationID }}/device/{{ .DeviceInfo.DevEUI }}/command/{{ .CommandType }}"
 
 # Regiones LoRaWAN habilitadas
 [network]
