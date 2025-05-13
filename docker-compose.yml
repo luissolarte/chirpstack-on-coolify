@@ -6,8 +6,8 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     #command: -c /docker-entrypoint-initdb.d
-    networks:
-      - chirpstack-net
+    # networks:
+    #   - chirpstack-net
     volumes:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
@@ -15,7 +15,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-chirpstack}
       - POSTGRES_USER=${POSTGRES_USER:-chirpstack}
       - POSTGRES_DB=${POSTGRES_DB:-chirpstack}
-      - POSTGRESQL_HOST=${POSTGRES_HOST:-localhost}
+      - POSTGRESQL_HOST=${POSTGRES_HOST:-postgres}
       - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - "5432:5432"
@@ -30,8 +30,8 @@ services:
     image: chirpstack/chirpstack:4
     command: -c /etc/chirpstack
     restart: unless-stopped
-    networks:
-      - chirpstack-net
+    # networks:
+    #   - chirpstack-net
     volumes:
       - ./configuration/chirpstack:/etc/chirpstack
     depends_on:
@@ -44,7 +44,7 @@ services:
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=chirpstack
+      - POSTGRESQL_HOST=postgres
     ports:
       - "8081:8080"
 
@@ -84,8 +84,8 @@ services:
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
     restart: unless-stopped
-    networks:
-      - chirpstack-net
+    # networks:
+    #   - chirpstack-net
     environment:
       - SERVER=chirpstack:8080
     ports:
@@ -97,8 +97,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    networks:
-      - chirpstack-net
+    # networks:
+    #   - chirpstack-net
     volumes:
       - redis_data:/data
     # ports:
@@ -115,8 +115,8 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
-    networks:
-      - chirpstack-net
+    # networks:
+    #   - chirpstack-net
     volumes:
       - mosquitto-config:/mosquitto/config
     environment:
@@ -141,6 +141,6 @@ volumes:
   redis_data:
   mosquitto-config:
 
-networks:
-  chirpstack-net:
-    driver: bridge
+# networks:
+#   chirpstack-net:
+#     driver: bridge
