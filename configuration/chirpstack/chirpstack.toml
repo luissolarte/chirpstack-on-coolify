@@ -12,7 +12,7 @@ level="info"
   #  * disable - Do not use TLS
   #  * prefer - Attempt to connect with TLS but allow sessions without
   #  * require - Require the use of TLS
-  dsn="postgres://chirpstack:chirpstack@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
+  dsn="postgres://chirpstack:chirpstack@$POSTGRES_HOST/chirpstack?sslmode=disable"
 
   # Max open connections.
   #
@@ -30,7 +30,7 @@ level="info"
 # Redis settings
 [redis]
 servers=[
-  "redis:6379",
+  "redis://redis:6379",
 ]
 
 # API interface
