@@ -26,3 +26,16 @@ psql -v ON_ERROR_STOP=1 --username="$POSTGRES_USER" --dbname="$POSTGRES_DB" <<-E
 EOSQL
 
 echo "=== Configuración PostgreSQL completada ==="
+
+# Configurar pg_hba.conf para mayor seguridad
+echo "Configurando autenticación..."
+cat >> /var/lib/postgresql/data/pg_hba.conf << 'EOHBA'
+
+# Configuración personalizada para ChirpStack
+# Conexiones locales (dentro del contenedor)
+local   all             all                                     trust
+# Conexiones desde otros contenedores - requiere contraseña
+host    all             all             0.0.0.0/0               md5
+EOHBA
+
+echo "Configuración de PostgreSQL completada exitosamente"
