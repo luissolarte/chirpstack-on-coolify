@@ -122,8 +122,8 @@ services:
     volumes:
       - mosquitto-config:/mosquitto/config
     environment:
-      - MQTT_USERNAME=${SERVICE_USER_MOSQUITTO}
-      - MQTT_PASSWORD2=${SERVICE_PASSWORD_MOSQUITTO}
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
       - ALLOW_ANONYMOUS=${ALLOW_ANONYMOUS:-false}
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
@@ -156,7 +156,7 @@ services:
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME3" “$MQTT_PASSWORD"
+          mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" “$MQTT_PASSWORD"
           chown mosquitto:mosquitto /mosquitto/config/passwords
         fi
 
