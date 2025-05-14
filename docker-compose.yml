@@ -116,26 +116,44 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
+      - "1884:1884"
     # networks:
     #   - chirpstack-net
     volumes:
       - mosquitto-config:/mosquitto/config
     environment:
-      - ALLOW_ANONYMOUS=true
+      - MQTT_USERNAME=${SERVICE_USER_MOSQUITTO}
+      - MQTT_PASSWORD=${SERVICE_PASSWORD_MOSQUITTO}
+      - ALLOW_ANONYMOUS=false
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
       interval: 30s
       timeout: 10s
       retries: 3
-    entrypoint: >
-      sh -c "
-      echo 'listener 1883' > /mosquitto/config/mosquitto.conf &&
-      echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf &&
-      echo 'connection_messages true' >> /mosquitto/config/mosquitto.conf &&
-      echo 'log_dest stdout' >> /mosquitto/config/mosquitto.conf &&
-      chmod 0644 /mosquitto/config/mosquitto.conf &&
-      exec mosquitto -c /mosquitto/config/mosquitto.conf
-      "
+    entrypoint: |
+       sh -c "
+        # Si 'ALLOW_ANONYMOUS' es 'false', configurar autenticación para el puerto 1884
+        if [ '$ALLOW_ANONYMOUS' = 'false' ]; then
+          echo 'listener 1884' > /mosquitto/config/mosquitto.conf
+          echo 'password_file /mosquitto/config/passwords' >> /mosquitto/config/mosquitto.conf
+
+          # Crear archivo de contraseñas y asignar permisos adecuados
+          touch /mosquitto/config/passwords
+          chmod 0700 /mosquitto/config/passwords
+          chown root:root /mosquitto/config/passwords
+
+          # Añadir usuario y contraseña al archivo de contraseñas
+          mosquitto_passwd -b -c /mosquitto/config/passwords $MQTT_USERNAME $MQTT_PASSWORD
+          chown mosquitto:mosquitto /mosquitto/config/passwords
+        fi
+
+        # Configurar listener para conexiones internas sin autenticación
+        echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
+        echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
+
+        # Iniciar Mosquitto con la configuración generada
+        exec mosquitto -c /mosquitto/config/mosquitto.conf
+        "
 
 volumes:
   postgres_data:
