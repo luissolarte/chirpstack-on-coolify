@@ -130,8 +130,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    entrypoint: |
-       sh -c "
+    entrypoint: >
+       sh -c '
         # Inicializar archivo de configuración limpio
          echo '' > /mosquitto/config/mosquitto.conf
 
@@ -156,13 +156,13 @@ services:
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          mosquitto_passwd -b -c /mosquitto/config/passwords $MQTT_USERNAME $MQTT_PASSWORD
+          mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" "$MQTT_PASSWORD"
           chown mosquitto:mosquitto /mosquitto/config/passwords
         fi
 
         # Ejecutar mosquitto
         exec mosquitto -c /mosquitto/config/mosquitto.conf
-        "
+        '
 
 volumes:
   postgres_data:
