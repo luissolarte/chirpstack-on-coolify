@@ -116,7 +116,7 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
-      - "1884:1884"
+      
     # networks:
     #   - chirpstack-net
     volumes:
@@ -132,26 +132,29 @@ services:
       retries: 3
     entrypoint: |
        sh -c "
-        # Si 'ALLOW_ANONYMOUS' es 'false', configurar autenticación para el puerto 1884
-        if [ '$ALLOW_ANONYMOUS' = 'false' ]; then
-          echo 'listener 1884' > /mosquitto/config/mosquitto.conf
+        # Inicializar archivo de configuración limpio
+         echo '' > /mosquitto/config/mosquitto.conf
+
+        # Listener sin autenticación (interno)
+        echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
+        echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
+
+        # Listener con autenticación (externo)
+        if [ \"$ALLOW_ANONYMOUS\" = \"false\" ]; then
+          echo 'listener 1884' >> /mosquitto/config/mosquitto.conf
+          echo 'allow_anonymous false' >> /mosquitto/config/mosquitto.conf
           echo 'password_file /mosquitto/config/passwords' >> /mosquitto/config/mosquitto.conf
 
-          # Crear archivo de contraseñas y asignar permisos adecuados
+          # Crear archivo de contraseñas
           touch /mosquitto/config/passwords
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          # Añadir usuario y contraseña al archivo de contraseñas
           mosquitto_passwd -b -c /mosquitto/config/passwords $MQTT_USERNAME $MQTT_PASSWORD
           chown mosquitto:mosquitto /mosquitto/config/passwords
         fi
 
-        # Configurar listener para conexiones internas sin autenticación
-        echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
-        echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
-
-        # Iniciar Mosquitto con la configuración generada
+        # Ejecutar mosquitto
         exec mosquitto -c /mosquitto/config/mosquitto.conf
         "
 
