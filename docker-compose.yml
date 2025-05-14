@@ -162,7 +162,7 @@ services:
 
         # Ejecutar mosquitto
         exec mosquitto -c /mosquitto/config/mosquitto.conf
-        ""
+        "
 
 volumes:
   postgres_data:
