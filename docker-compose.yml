@@ -135,6 +135,10 @@ services:
         # Inicializar archivo de configuración limpio
          echo '' > /mosquitto/config/mosquitto.conf
 
+
+        # Empezar con configuración por listener
+        echo 'per_listener_settings true' > /mosquitto/config/mosquitto.conf
+
         # Listener sin autenticación (interno)
         echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
         echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
