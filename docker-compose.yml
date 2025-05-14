@@ -130,39 +130,43 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    entrypoint: |
-       sh -c "
+    entrypoint: >
+       sh -c '
         # Inicializar archivo de configuración limpio
-         echo '' > /mosquitto/config/mosquitto.conf
-
+        echo "" > /mosquitto/config/mosquitto.conf
 
         # Empezar con configuración por listener
-        echo 'per_listener_settings true' > /mosquitto/config/mosquitto.conf
+        echo "per_listener_settings true" >> /mosquitto/config/mosquitto.conf
 
         # Listener sin autenticación (interno)
-        echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
-        echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
+        echo "listener 1883" >> /mosquitto/config/mosquitto.conf
+        echo "allow_anonymous true" >> /mosquitto/config/mosquitto.conf
 
-        echo '' >> /mosquitto/config/mosquitto.conf  # Separador visual
+        echo "" >> /mosquitto/config/mosquitto.conf  # Separador visual
 
         # Listener con autenticación (externo)
-        if [ \"$ALLOW_ANONYMOUS\" = \"false\" ]; then
-          echo 'listener 1884' >> /mosquitto/config/mosquitto.conf
-          echo 'allow_anonymous false' >> /mosquitto/config/mosquitto.conf
-          echo 'password_file /mosquitto/config/passwords' >> /mosquitto/config/mosquitto.conf
+        if [ "$ALLOW_ANONYMOUS" = "false" ]; then
+          echo "listener 1884" >> /mosquitto/config/mosquitto.conf
+          echo "allow_anonymous false" >> /mosquitto/config/mosquitto.conf
+          echo "password_file /mosquitto/config/passwords" >> /mosquitto/config/mosquitto.conf
 
           # Crear archivo de contraseñas
           touch /mosquitto/config/passwords
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          mosquitto_passwd -b -c /mosquitto/config/passwords \"$MQTT_USERNAME\" \"$MQTT_PASSWORD\"
-          chown mosquitto:mosquitto /mosquitto/config/passwords
+          if [ -n "$MQTT_USERNAME" ] && [ -n "$MQTT_PASSWORD" ]; then
+            mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" "$MQTT_PASSWORD"
+            chown mosquitto:mosquitto /mosquitto/config/passwords
+          else
+            echo "ERROR: MQTT_USERNAME o MQTT_PASSWORD no están definidos." >&2
+            exit 1
+          fi
         fi
 
-        # Ejecutar mosquitto
+        # Ejecutar Mosquitto
         exec mosquitto -c /mosquitto/config/mosquitto.conf
-        "
+        '
 
 volumes:
   postgres_data:
