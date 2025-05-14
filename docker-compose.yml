@@ -116,7 +116,7 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
-      
+      - "1884:1884"      
     # networks:
     #   - chirpstack-net
     volumes:
