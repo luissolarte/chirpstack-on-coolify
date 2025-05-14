@@ -156,7 +156,7 @@ services:
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          mosquitto_passwd -b -c /mosquitto/config/passwords \"$MQTT_USERNAME\" \“$MQTT_PASSWORD\"
+          mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" “$MQTT_PASSWORD"
           chown mosquitto:mosquitto /mosquitto/config/passwords
         fi
 
