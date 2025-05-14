@@ -131,7 +131,7 @@ services:
       timeout: 10s
       retries: 3
     entrypoint: |
-       sh -c "
+       sh -c '
         # Inicializar archivo de configuración limpio
          echo '' > /mosquitto/config/mosquitto.conf
 
@@ -162,7 +162,7 @@ services:
 
         # Ejecutar mosquitto
         exec mosquitto -c /mosquitto/config/mosquitto.conf
-        "
+        '
 
 volumes:
   postgres_data:
