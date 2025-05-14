@@ -139,6 +139,8 @@ services:
         echo 'listener 1883' >> /mosquitto/config/mosquitto.conf
         echo 'allow_anonymous true' >> /mosquitto/config/mosquitto.conf
 
+        echo '' >> /mosquitto/config/mosquitto.conf  # Separador visual
+
         # Listener con autenticación (externo)
         if [ \"$ALLOW_ANONYMOUS\" = \"false\" ]; then
           echo 'listener 1884' >> /mosquitto/config/mosquitto.conf
