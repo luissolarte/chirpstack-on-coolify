@@ -130,7 +130,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    entrypoint: |
+    entrypoint: >
        sh -c '
         # Inicializar archivo de configuración limpio
          echo '' > /mosquitto/config/mosquitto.conf
@@ -146,7 +146,7 @@ services:
         echo '' >> /mosquitto/config/mosquitto.conf  # Separador visual
 
         # Listener con autenticación (externo)
-        if [ \"$ALLOW_ANONYMOUS\" = \"false\" ]; then
+        if [ $ALLOW_ANONYMOUS = false ]; then
           echo 'listener 1884' >> /mosquitto/config/mosquitto.conf
           echo 'allow_anonymous false' >> /mosquitto/config/mosquitto.conf
           echo 'password_file /mosquitto/config/passwords' >> /mosquitto/config/mosquitto.conf
@@ -156,7 +156,7 @@ services:
           chmod 0700 /mosquitto/config/passwords
           chown root:root /mosquitto/config/passwords
 
-          mosquitto_passwd -b -c /mosquitto/config/passwords \"$MQTT_USERNAME\" \“$MQTT_PASSWORD\"
+          mosquitto_passwd -b -c /mosquitto/config/passwords $MQTT_USERNAME $MQTT_PASSWORD
           chown mosquitto:mosquitto /mosquitto/config/passwords
         fi
 
