@@ -148,7 +148,7 @@ services:
         # Listener con autenticación (externo)
         if [ \"$ALLOW_ANONYMOUS\" = \"false\" ]; then
           echo 'listener 1884' >> /mosquitto/config/mosquitto.conf
-          echo 'allow_anonymous "false' >> /mosquitto/config/mosquitto.conf
+          echo 'allow_anonymous false' >> /mosquitto/config/mosquitto.conf
           echo 'password_file /mosquitto/config/passwords' >> /mosquitto/config/mosquitto.conf
 
           # Crear archivo de contraseñas
